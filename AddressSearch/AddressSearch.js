@@ -11,12 +11,12 @@ define([
     "dojox/form/BusyButton",
 
     "esri/geometry/Extent",
-    "esri/request"
+    "esri/tasks/locator"
 ], function(
     declare, topic, put,
     WidgetBase, TemplatedMixin, WidgetsInTemplateMixin, template,
     BusyButton,
-    Extent, esriRequest
+    Extent, Locator
 ) {
     var theDijit = {
         templateString: template,
@@ -32,6 +32,8 @@ define([
                     wkid: 102100
                 }
             });
+
+            this.locator = new Locator("http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer");
         },
 
         postCreate: function() {
@@ -48,35 +50,44 @@ define([
         },
 
         _doGeocodeSearch: function(searchString) {
-            var _this = this;
-            var content = {
-                callbackParamName: "callback",
-                text: searchString,
-                extent: this.searchExtent,
-                f: "json"
+            console.log("searchString: ", searchString);
+            var params = {
+                address: {
+                    singleLine: searchString
+                },
+                forStorage: false,
+                maxLocations: 5,
+                searchExtent: this.searchExtent
             };
 
-            esriRequest({
-                url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find",
-                content: content,
-                handleAs: "json"
-            }).then(function(response) {
-                console.log(response);
-                _this.searchButton.cancel();
-                if (response.locations.length > 0)
-                {
-                    var geometry = response.locations[0].feature.geometry;
-                    console.log("response geometry: ", geometry);
-                    topic.publish(AddressSearch.searchLocationSelectedTopic, geometry);
-                }
+            var _this = this;
+            this.locator.addressToLocations(params).then(function(response) {
+                _this.handleLocatorResponse(response);
             }, function(err) {
-                console.log("Geocode query failed: ", err);
-                _this.searchButton.cancel();
+                _this.searchButton.cancel(err);
             });
-        }
+        },
+
+        handleLocatorResponse: function(response) {
+            console.log("Locator response: ", response);
+            this.searchButton.cancel();
+            if (response.length > 0)
+            {
+                var geometry = response[0].location;
+                console.log("response geometry: ", geometry);
+                topic.publish(AddressSearch.searchLocationSelectedTopic, geometry);
+            }
+        },
+
+        handleErrorResponse: function(error) {
+            console.log("Geocode query error: ", error);
+            this.searchButton.cancel();
+        },
+
+        noComma: true
     };
 
-    var AddressSearch =  declare([WidgetBase, TemplatedMixin, WidgetsInTemplateMixin], theDijit);
+    var AddressSearch = declare([WidgetBase, TemplatedMixin, WidgetsInTemplateMixin], theDijit);
 
     AddressSearch.searchLocationSelectedTopic = "addressSearchSearchLocationSelectedTopic";
     return AddressSearch;
