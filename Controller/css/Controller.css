@@ -1,0 +1,24 @@
+.controller {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+.controller .mainContainer {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+.controller .map {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+.controller .header {
+    position: relative;
+    height:50px;
+    overflow: auto;
+    margin-top: auto;
+}

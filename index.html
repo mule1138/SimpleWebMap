@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
+    <title>Court Finder Map</title>
+    <link rel="stylesheet" href="http://js.arcgis.com/3.14/dijit/themes/nihilo/nihilo.css">
+    <link rel="stylesheet" href="http://js.arcgis.com/3.14/dojox/form/resources/BusyButton.css">
+    <link rel="stylesheet" href="http://js.arcgis.com/3.14/esri/css/esri.css">
+    <link rel="stylesheet" href="main.css">
+  </head>
+
+  <body class="nihilo">
+    <div id="controllerNode">
+    </div>
+    <script>
+      var path = location.pathname.replace(/[^\/]+$/, '');
+      window.dojoConfig = {
+        async: 1,
+        parseOnLoad: false,
+        tlmSiblingOfDojo: 0,
+        packages: [
+          {
+            name: "mapJS",
+            location: path
+          }
+        ]
+      };
+    </script>
+    <script src="http://js.arcgis.com/3.14/"></script>
+    <script>
+      require([
+        "mapJS/Controller/Controller",
+        "dojo/domReady!"
+        ], function(Controller) {
+            var appController = new Controller(null, "controllerNode");
+            appController.startup();
+        });
+    </script>
+  </body>
+</html>
