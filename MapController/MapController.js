@@ -100,7 +100,6 @@ define([
 
         _focusOnCourtFeature: function(courtFeatures) {
             console.log("Courts: ", courtFeatures);
-            this.map.infoWindow.clearFeatures();
             this.map.infoWindow.setFeatures(courtFeatures);
             this.map.infoWindow.select(0);
             var firstFeature = courtFeatures[0];
@@ -114,8 +113,10 @@ define([
             // handle feature switching
             this.map.infoWindow.on("selection-change", function() {
                 var selectedFeature = this.map.infoWindow.getSelectedFeature();
-                var courtLocation = selectedFeature.geometry;
-                this.map.infoWindow.show(courtLocation);
+                if (selectedFeature) {
+                    var courtLocation = selectedFeature.geometry;
+                    this.map.infoWindow.show(courtLocation);
+                }
             });
         },
 
