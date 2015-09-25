@@ -114,8 +114,10 @@ define([
             // handle feature switching
             this.map.infoWindow.on("selection-change", function() {
                 var selectedFeature = this.map.infoWindow.getSelectedFeature();
-                var courtLocation = selectedFeature.geometry;
-                this.map.infoWindow.show(courtLocation);
+                if (selectedFeature) {
+                    var courtLocation = selectedFeature.geometry;
+                    this.map.infoWindow.show(courtLocation);
+                }
             });
         },
 
