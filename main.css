@@ -1,6 +1,6 @@
-@import url(./AddressSearch/css/AddressSearch.css);
-@import url(./Controller/css/Controller.css);
-@import url(./Header/css/Header.css);
+@import url(./src/AddressSearch/css/AddressSearch.css);
+@import url(./src/Controller/css/Controller.css);
+@import url(./src/Header/css/Header.css);
 
 html, body{
     height: 100%;
