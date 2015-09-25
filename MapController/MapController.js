@@ -100,7 +100,6 @@ define([
 
         _focusOnCourtFeature: function(courtFeatures) {
             console.log("Courts: ", courtFeatures);
-            this.map.infoWindow.clearFeatures();
             this.map.infoWindow.setFeatures(courtFeatures);
             this.map.infoWindow.select(0);
             var firstFeature = courtFeatures[0];
