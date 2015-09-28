@@ -31,10 +31,14 @@ define([
     var theDijit = {
         templateString: template,
         widgetsInTemplate: true,
-        mapController: null,
         searchShowing: false,
+        mapController: null,
+        header: null,
+        addressSearch: null,
 
         constructor: function() {
+            this.inherited(arguments);
+
             this.initialExent = new Extent({
                 xmax: -10020539.740375254,
                 xmin: -10117156.144127589,
@@ -47,6 +51,8 @@ define([
         },
 
         postCreate: function() {
+            this.inherited(arguments);
+
             this._initTopics();
             this._initHeader();
             this._initMap();
@@ -54,10 +60,12 @@ define([
         },
 
         destroy: function() {
-
+            this.inherited(arguments);
         },
 
         startup: function() {
+            this.inherited(arguments);
+
             this.mainContainer.startup();
         },
 
@@ -67,12 +75,14 @@ define([
 
         _initTopics: function() {
             var _this = this;
-            topic.subscribe(Header.searchButtonClickedTopic, function() {
-                _this._showSearch(arguments);
-            });
-            topic.subscribe(AddressSearch.searchLocationSelectedTopic, function() {
-                _this._showSearchLocation(arguments);
-            });
+            this.own(
+                topic.subscribe(Header.searchButtonClickedTopic, function() {
+                    _this._showSearch(arguments);
+                }),
+                topic.subscribe(AddressSearch.searchLocationSelectedTopic, function() {
+                    _this._showSearchLocation(arguments);
+                })
+            );
         },
 
         _initHeader: function() {
@@ -89,12 +99,14 @@ define([
         _initMap: function() {
             var popup = new PopupMobile(null, put("div"));
 
+            // Create the map
             this.map = new Map(this.mapPane.domNode, {
                 basemap: "streets",
                 extent: this.initialExent,
                 infoWindow: popup
             });
 
+            // Create the MapController when the map is loaded
             this.map.on("load", function(map) {
                 this.mapController = new MapController(map);
             });
