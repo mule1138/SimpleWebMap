@@ -69,12 +69,15 @@ define([
                             });
 
                             _this._focusOnCourtFeature(results.features);
-                            _this.mapStandby.hide();
                         }
+                        _this.mapStandby.hide();
                     }, function(err) {
                         console.log("The courts query failed: ", err);
                         _this.mapStandby.hide();
                     });
+                } else {
+                    // All done since there is no municipality to show
+                    _this.mapStandby.hide();
                 }
             }, function(err) {
                 console.log("The boundary query failed: ", err);
