@@ -23,6 +23,8 @@ define([
         widgetsInTemplate: true,
 
         constructor: function(args) {
+            this.inherited(arguments);
+
             this.searchExtent = new Extent({
                 xmax: -10020539.740375254,
                 xmin: -10117156.144127589,
@@ -37,6 +39,8 @@ define([
         },
 
         postCreate: function() {
+            this.inherited(arguments);
+
             this._initSearchButton();
         },
 

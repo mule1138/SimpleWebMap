@@ -3,6 +3,8 @@ define([
     "dojo/_base/lang",
     "dojo/topic",
 
+    "dojox/widget/Standby",
+
     "esri/InfoTemplate",
     "esri/geometry/Extent",
     "esri/layers/FeatureLayer",
@@ -16,6 +18,7 @@ define([
 
 ], function(
     declare, lang, topic,
+    Standby,
     InfoTemplate, Extent, FeatureLayer, InfoWindow, Query, QueryTask, Point, SpatialReference,
     AddressSearch
 ) {
@@ -28,13 +31,14 @@ define([
             this.boundaryUrl = "http://maps.stlouisco.com/arcgis/rest/services/OpenData/OpenData/FeatureServer/5";
             this.courtsUrl = "https://services.arcgis.com/bkrWlSKcjUDFDtgw/arcgis/rest/services/MunicipalCourtLocations/FeatureServer/0";
 
+            this._initMapStandby();
+
             this._initLayers();
 
             var _this = this;
             topic.subscribe(AddressSearch.searchLocationSelectedTopic, function() {
                 _this._showSearchLocation(arguments);
             });
-
         },
 
         queryForCourtByPoint: function(point) {
@@ -44,8 +48,9 @@ define([
             boundaryQuery.relationParam = Query.SPATIAL_REL_WITHIN;
             boundaryQuery.outFields = ["MUNICIPALITY"];
 
-            var boundaryQueryTask = new QueryTask(this.boundaryUrl);
+            this.mapStandby.show();
             var _this = this;
+            var boundaryQueryTask = new QueryTask(this.boundaryUrl);
             boundaryQueryTask.execute(boundaryQuery).then(function(results) {
                 if (results.features.length > 0) {
                     console.log("Municipality: ", results.features[0].attributes.MUNICIPALITY);
@@ -64,13 +69,16 @@ define([
                             });
 
                             _this._focusOnCourtFeature(results.features);
+                            _this.mapStandby.hide();
                         }
                     }, function(err) {
                         console.log("The courts query failed: ", err);
+                        _this.mapStandby.hide();
                     });
                 }
             }, function(err) {
                 console.log("The boundary query failed: ", err);
+                _this.mapStandby.hide();
             });
         },
 
@@ -98,6 +106,15 @@ define([
             return muniCourtsLayer;
         },
 
+        _initMapStandby: function() {
+            // Create the map standby widget
+            this.mapStandby = new Standby({
+                target: "map"
+            });
+            document.body.appendChild(this.mapStandby.domNode);
+            this.mapStandby.startup();
+        },
+
         _focusOnCourtFeature: function(courtFeatures) {
             console.log("Courts: ", courtFeatures);
             this.map.infoWindow.setFeatures(courtFeatures);
@@ -122,7 +139,9 @@ define([
 
         _showSearchLocation: function(location) {
             console.log("_showSearchLocation: ", location[0]);
-            var locationPoint = new Point(location[0].x, location[0].y, new SpatialReference({wkid: 4326}));
+            var locationPoint = new Point(location[0].x, location[0].y, new SpatialReference({
+                wkid: 4326
+            }));
             this.queryForCourtByPoint(locationPoint);
         }
     };

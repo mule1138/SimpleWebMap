@@ -20,9 +20,12 @@ define([
         widgetsInTemplate: true,
 
         constructor: function(args) {
+            this.inherited(arguments);
         },
 
         postCreate: function() {
+            this.inherited(arguments);
+
             this._initButtons();
         },
 
